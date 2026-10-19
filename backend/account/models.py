@@ -34,7 +34,7 @@ class User(AbstractUser):
         
         )
     
-    brance=models.ForeignKey(Brance, on_delete=models.PROTECT,related_name="user")
+    brance=models.ForeignKey(Brance, on_delete=models.PROTECT,related_name="user",null=True,blank=True)
     is_active=models.BooleanField(default=False)
 
     USERNAME_FIELD='email'

@@ -1,3 +1,24 @@
-from django.shortcuts import render
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework import status
 
-# Create your views here.
+from .serializers import RegistrationSerializer
+
+class RegisterView(generics.CreateAPIView):
+    serializer_class=RegistrationSerializer
+    permission_classes=[AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer=self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user=serializer.save()
+        return Response(
+            {
+                "message":"Registration complete. Now wait for admin approval .",
+                "email":user.email,
+                "role":user.role,
+                "is_active":user.is_active,
+            },
+            status=status.HTTP_201_CREATED,
+        )
