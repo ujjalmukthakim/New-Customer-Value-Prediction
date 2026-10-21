@@ -1,5 +1,10 @@
 from rest_framework import serializers
+from django.contrib.auth import authenticate
+
+
+
 from .models import User,Brance
+
 
 class RegistrationSerializer(serializers.ModelSerializer):
 
@@ -26,7 +31,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         
 
-        def create(self,validated_data):
+    def create(self,validated_data):
             password=validated_data.pop("password")
 
             user=User.objects.create_user(
@@ -35,4 +40,27 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 **validated_data
             )
             return user
-        
+
+
+
+class LoginSerializer(serializers.Serializer):
+    email=serializers.EmailField()
+    password=serializers.CharField(write_only=True,trim_whitespace=False)
+
+    def validate(self, data):
+        request=self.context.get("request")
+
+        user=authenticate(
+            request=request,
+            email=data["email"],
+            password=data["password"]
+        )
+
+        if not user:
+            raise serializers.ValidationError(
+                "Invalid User...or your account is not active"
+            )
+        data["user"]=user
+        return data
+
+
