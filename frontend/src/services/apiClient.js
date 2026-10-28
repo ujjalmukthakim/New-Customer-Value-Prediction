@@ -1,35 +1,32 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import axios from "axios";
+
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+
+if (!baseURL) {
+  throw new Error("VITE_API_BASE_URL is not configured.");
+}
+
+const apiClient = axios.create({
+  baseURL: baseURL.replace(/\/$/, ""),
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 export async function apiRequest(path, options = {}) {
-  if (!API_BASE_URL) {
-    throw new Error("VITE_API_BASE_URL is not configured.");
+  try {
+    const response = await apiClient.request({ url: path, ...options });
+    return response.data;
+  } catch (error) {
+    const apiError = new Error(getResponseMessage(error.response?.data));
+    apiError.status = error.response?.status;
+    apiError.data = error.response?.data;
+    throw apiError;
   }
-
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const baseUrl = API_BASE_URL.replace(/\/$/, "");
-  const response = await fetch(`${baseUrl}${normalizedPath}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-
-  const data = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    const error = new Error(getResponseMessage(data));
-    error.status = response.status;
-    error.data = data;
-    throw error;
-  }
-
-  return data;
 }
 
 function getResponseMessage(data) {
   if (!data) return "The request failed. Please try again.";
-
   if (typeof data === "string") return data;
 
   return Object.values(data)
