@@ -44,11 +44,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    email=serializers.EmailField()
+    email=serializers.EmailField(trim_whitespace=True)
     password=serializers.CharField(write_only=True,trim_whitespace=False)
 
     def validate(self, data):
         request=self.context.get("request")
+        data["email"] = data["email"].strip().lower()
 
         user=authenticate(
             request=request,

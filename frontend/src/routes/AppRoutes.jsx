@@ -1,9 +1,10 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
-import DashboardPage from "../pages/DashboardPage";
+// import DashboardPage from "../pages/DashboardPage";
 import NotFoundPage from "../pages/NotFoundPage";
 import ProtectedRoute from "./ProtectedRoute";
+import EmployeeDashboardPage from "../pages/EmployeeDashboardPage";
 
 export default function AppRoutes() {
   return (
@@ -12,9 +13,22 @@ export default function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      <Route element={<ProtectedRoute />}>
+      {/* <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardPage />} />
-      </Route>
+      </Route> */}
+
+        {/* Employee Routes */}
+        <Route
+          element={<ProtectedRoute allowedRoles={["Employee"]}/>}
+        >
+          <Route
+            path="/employee/dashboard"
+            element={<EmployeeDashboardPage/>}
+          />
+        </Route>
+
+
+
 
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

@@ -19,7 +19,7 @@ export default function AuthLayout({ title, description, children, footer }) {
         <div className="auth-footer">{footer}</div>
       </section>
 
-      <p className="copyright">© {new Date().getFullYear()} Value Customer</p>
+      <p className="copyright">© {new Date().getFullYear()} Customer Value</p>
     </main>
   );
 }

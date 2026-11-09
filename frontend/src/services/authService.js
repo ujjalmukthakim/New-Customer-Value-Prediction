@@ -1,9 +1,11 @@
-import { apiRequest } from "./apiClient";
+import apiClient from "./apiClient";
 
-export function loginRequest(credentials) {
-  return apiRequest("/auth/login/", { method: "POST", data: credentials });
+export async function loginRequest(credentials) {
+  const response = await apiClient.post("login/", credentials);
+  return response.data;
 }
 
-export function registerRequest(registrationData) {
-  return apiRequest("/auth/register/", { method: "POST", data: registrationData });
+export async function registerRequest(registrationData) {
+  const response = await apiClient.post("register/", registrationData);
+  return response.data;
 }
