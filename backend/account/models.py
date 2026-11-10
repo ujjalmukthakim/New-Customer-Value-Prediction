@@ -18,6 +18,7 @@ class Brance(models.Model):
 class User(AbstractUser):
 
     class Role(models.TextChoices):
+        Customer = "Customer", "customer"
         Employee="Employee","employee"
         Manager="Manager","manager"
         Director="Director","director"

@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Router, Routes } from "react-router-dom";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 // import DashboardPage from "../pages/DashboardPage";
@@ -25,6 +25,14 @@ export default function AppRoutes() {
             path="/employee/dashboard"
             element={<EmployeeDashboardPage/>}
           />
+        </Route>
+
+        <Route element={<ProtectedRoute allowedRoles={["Customer"]}/>}>
+        <Route
+        path="/customer/dashboard"
+        // element={}
+        />
+
         </Route>
 
 
