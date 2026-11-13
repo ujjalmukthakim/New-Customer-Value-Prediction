@@ -67,7 +67,7 @@ class Product(models.Model):
     def __str__(self):
         return self.name
     
-class BranceProductPrice(models.Model):
+class BranchProductPrice(models.Model):
     brance=models.ForeignKey(Brance,on_delete=models.PROTECT)
     product=models.ForeignKey(Product, on_delete=models.CASCADE)
     buying_price=models.DecimalField(max_digits=10, decimal_places=2)
@@ -82,6 +82,15 @@ class BranceProductPrice(models.Model):
             )
         ]
 
+class PriceChange(models.Model):
+    branch_product_price=models.ForeignKey(BranchProductPrice,on_delete=models.PROTECT,related_name="price_history")
+    buying_price=models.DecimalField(max_digits=10, decimal_places=2)
+    selling_price=models.DecimalField(max_digits=10, decimal_places=2)
+    changed_by=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.PROTECT)
+    changed_at=models.DateTimeField(auto_now_add=True)
+
+
+
 class Sale(models.Model):
     brance=models.ForeignKey(Brance,on_delete=models.PROTECT)
     employee=models.ForeignKey(User,on_delete=models.PROTECT,related_name="sales_recorded")
@@ -95,6 +104,13 @@ class SaleItem(models.Model):
     quantity=models.PositiveIntegerField()
     buying_price_at_sale=models.DecimalField(max_digits=10, decimal_places=2)
     selling_price_at_sale=models.DecimalField(max_digits=10, decimal_places=2)
+
+
+    @property
+    def total(self):
+        return(
+            self.selling_price_at_sale * self.quantity
+        )
 
     @property
     def profit(self):
