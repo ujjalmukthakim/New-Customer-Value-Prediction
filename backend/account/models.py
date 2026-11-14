@@ -7,7 +7,7 @@ from django.conf import settings
 
 
 
-class Brance(models.Model):
+class Branch(models.Model):
     name=models.CharField(max_length=50,unique=True)
     address=models.TextField(blank=True,null=True)
     is_active=models.BooleanField(default=True)
@@ -36,7 +36,7 @@ class User(AbstractUser):
         
         )
     
-    brance=models.ForeignKey(Brance, on_delete=models.PROTECT,related_name="user",null=True,blank=True)
+    brance=models.ForeignKey(Branch, on_delete=models.PROTECT,related_name="user",null=True,blank=True)
     is_active=models.BooleanField(default=False)
 
     USERNAME_FIELD='email'
@@ -50,7 +50,7 @@ class User(AbstractUser):
 
 
 class CustomerProfile(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE,related_name="customer_profile")
+    user=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="customer_profile")
     rank=models.CharField(max_length=20,default="Bronze")
     lifetime_spend=models.DecimalField(max_digits=12, decimal_places=2,default=0)
 
@@ -68,7 +68,7 @@ class Product(models.Model):
         return self.name
     
 class BranchProductPrice(models.Model):
-    brance=models.ForeignKey(Brance,on_delete=models.PROTECT)
+    branch=models.ForeignKey(Branch,on_delete=models.PROTECT)
     product=models.ForeignKey(Product, on_delete=models.CASCADE)
     buying_price=models.DecimalField(max_digits=10, decimal_places=2)
     selling_price=models.DecimalField(max_digits=10, decimal_places=2)
@@ -78,7 +78,7 @@ class BranchProductPrice(models.Model):
         constraints=[
             models.UniqueConstraint(
                 fields=["branch","product"],
-                name="unique_product_price_per_brance",
+                name="unique_product_price_per_branch",
             )
         ]
 
@@ -92,8 +92,8 @@ class PriceChange(models.Model):
 
 
 class Sale(models.Model):
-    brance=models.ForeignKey(Brance,on_delete=models.PROTECT)
-    employee=models.ForeignKey(User,on_delete=models.PROTECT,related_name="sales_recorded")
+    branch=models.ForeignKey(Branch,on_delete=models.PROTECT)
+    employee=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.PROTECT,related_name="sales_recorded")
     customer=models.ForeignKey(CustomerProfile,on_delete=models.PROTECT,related_name="sales")
     created_at=models.DateTimeField(auto_now=True)
 

@@ -3,7 +3,16 @@ from django.contrib.auth import authenticate
 
 
 
-from .models import User,Brance
+from .models import (
+    User,
+    Branch,
+    BranchProductPrice,
+    CustomerProfile,
+    Product,
+    Sale,
+    SaleItem,
+    
+)
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -11,7 +20,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     password=serializers.CharField(write_only=True,min_length=8)
 
     brance=serializers.PrimaryKeyRelatedField(
-        queryset=Brance.objects.filter(is_active=True)
+        queryset=Branch.objects.filter(is_active=True)
     )
 
     class Meta:
@@ -36,6 +45,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
             user=User.objects.create_user(
                 password=password,
+                role=User.Role.Customer,
                 is_active=False,
                 **validated_data
             )
