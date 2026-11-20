@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from django.db import transaction
 
 
 
@@ -39,7 +40,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         read_only_fields=["id"]
 
         
-
+    @transaction.atomic
     def create(self,validated_data):
             password=validated_data.pop("password")
 
@@ -49,7 +50,20 @@ class RegistrationSerializer(serializers.ModelSerializer):
                 is_active=False,
                 **validated_data
             )
+            # after creating user , instantly i create customer profile .
+            CustomerProfile.objects.create(user=user)
+            # i am returning user for save 
             return user
+
+
+class StaffCreateCustomerSerializer(RegistrationSerializer):
+     
+     password=serializers.CharField(
+          write_only=True,
+          min_length=8,
+          required=False,
+     )
+
 
 
 
@@ -67,7 +81,7 @@ class LoginSerializer(serializers.Serializer):
             password=data["password"]
         )
 
-        if not user:
+        if user is None or not user.is_active:
             raise serializers.ValidationError(
                 "Invalid User...or your account is not active"
             )
@@ -75,3 +89,15 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 
+class CustomerListSerializer(serializers.ModelSerializer):
+     first_name=serializers.CharField(source="user.first_name",read_only=True)
+     last_name=serializers.CharField(source="user.last_name",read_only=True)
+     email=serializers.EmailField(source="user.email",read_only=True)
+
+     class Meta :
+          model = CustomerProfile
+          fields=["id","first_name","last_name","email","rank","lifetime_spend"]
+
+
+
+     
