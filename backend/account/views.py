@@ -1,11 +1,41 @@
-from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework import generics,status
+from decimal import Decimal
+from django.db import transaction
+from django.db.models import Sum,F,ExpressionWrapper,DecimalField
+from django.utils import timezone
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegistrationSerializer,LoginSerializer
+from .serializers import (
+    RegistrationSerializer,
+    LoginSerializer,
+    BranceSerializer,
+    CustomerListSerializer,
+    PriceUpdateSerializer,
+    ProductSerializer,
+
+    )
+
+from .models import(
+    Branch,
+    BranchProductPrice,
+    CustomerProfile,
+    PriceChange,
+    Product,
+    Sale,
+    SaleItem,
+    User,
+)
+
+from .permissions import (
+    IsDirector,
+    IsEmployee,
+    IsEmployeeOrManager,
+    IsManager,
+    IsStaff,
+)
 
 class RegisterView(generics.CreateAPIView):
     serializer_class=RegistrationSerializer
@@ -45,6 +75,8 @@ class LoginView(APIView):
                 "refresh":str(refresh),
                 "user":{
                     "id":user.id,
+                    "first_name":user.first_name,
+                    "last_name":user.last_name,
                     "email":user.email,
                     "role":user.role,
                     "brance":user.brance_id
@@ -52,5 +84,8 @@ class LoginView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+class CustomerListCreateView(APIView):
+    
 
 
